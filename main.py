@@ -5,14 +5,16 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
 import configparser
+from webdriver_manager.chrome import ChromeDriverManager
+import os
 
-CHROMEDRIVER = "chromedriver.exe"
+driver = webdriver.Chrome(ChromeDriverManager().install())
 
 # ConfigParserのインスタンスを取得
 config = configparser.ConfigParser()
 
 # configを読みだし
-config.read("config.ini", 'UTF-8')
+config.read(os.path.join(os.path.dirname(__file__), "config.ini"), 'UTF-8')
 
 user_name = config["BASE"]["user_id"]
 pass_word = config["BASE"]["password"]
@@ -20,10 +22,7 @@ target_id = config["BASE"]["target_id"]
 listing_num = config["BASE"]["listing_num"]
 
 # リストした数をカウントする変数
-
-
-chrome_service = fs.Service(executable_path=CHROMEDRIVER)
-driver = webdriver.Chrome()
+# driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 5)
 
 
