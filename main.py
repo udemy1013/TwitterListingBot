@@ -7,19 +7,12 @@ import time
 import configparser
 from webdriver_manager.chrome import ChromeDriverManager
 import os
+import PySimpleGUI as sg
 
 driver = webdriver.Chrome(ChromeDriverManager().install())
 
 # ConfigParserのインスタンスを取得
 config = configparser.ConfigParser()
-
-# configを読みだし
-config.read(os.path.join(os.path.dirname(__file__), "config.ini"), 'UTF-8')
-
-user_name = config["BASE"]["user_id"]
-pass_word = config["BASE"]["password"]
-target_id = config["BASE"]["target_id"]
-listing_num = config["BASE"]["listing_num"]
 
 # リストした数をカウントする変数
 # driver = webdriver.Chrome()
@@ -66,7 +59,7 @@ def jump_to_page(username):
     driver.get("https://twitter.com/" + username)
     time.sleep(3)
 
-def start_listing():
+def start_listing(listing_num):
 
     # リスティングしたユーザー名を保管する変数の初期化
     listed_user = []
@@ -163,8 +156,33 @@ def scroll_by_offset(element, offset=0):
         driver.execute_script(script)
 
 
-jump_to_page(target_id)
-login(user_name, pass_word)
-jump_to_page(target_id)
-start_listing()
+# jump_to_page(target_id)
+# login(user_name, pass_word)
+# jump_to_page(target_id)
+# start_listing()
 
+sg.theme("DarkAmber")
+
+# ウィンドウに配置するコンポーネント
+layout = [[sg.Text('Twitter Listing Bot')],
+            [sg.Text('TwitterID'), sg.InputText(key="twitterid")],
+            [sg.Text('Twitterパスワード'), sg.InputText(key="password")],
+            [sg.Text('対象のTwitterID'), sg.InputText(key="targetid")],
+            [sg.Text('リストに追加する人数'), sg.InputText(default_text="1500", key="listingNum")],
+            [sg.Button('スタート'), sg.Button('終了')]]
+
+# ウィンドウの生成
+window = sg.Window('TwitterListingBot', layout)
+
+# イベントループ
+while True:
+    event, values = window.read()
+    if event == sg.WIN_CLOSED or event == '終了':
+        break
+    elif event == 'スタート':
+        jump_to_page(values["targetid"])
+        login(values["twitterid"], values["password"])
+        jump_to_page(values["targetid"])
+        start_listing(values["listingNum"])
+
+window.close()
