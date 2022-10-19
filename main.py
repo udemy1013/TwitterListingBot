@@ -9,8 +9,7 @@ import configparser
 from webdriver_manager.chrome import ChromeDriverManager
 import sys
 import tkinter as tk
-import os
-import PySimpleGUI as sg
+
 
 driver = webdriver.Chrome(ChromeDriverManager().install())
 
