@@ -6,6 +6,8 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 import configparser
 from webdriver_manager.chrome import ChromeDriverManager
+import sys
+import tkinter as tk
 import os
 import PySimpleGUI as sg
 
@@ -161,28 +163,73 @@ def scroll_by_offset(element, offset=0):
 # jump_to_page(target_id)
 # start_listing()
 
-sg.theme("DarkAmber")
+# PySimpleGUIの記述
+# sg.theme("DarkAmber")
+#
+# # ウィンドウに配置するコンポーネント
+# layout = [[sg.Text('Twitter Listing Bot')],
+#             [sg.Text('TwitterID'), sg.InputText(key="twitterid")],
+#             [sg.Text('Twitterパスワード'), sg.InputText(key="password")],
+#             [sg.Text('対象のTwitterID'), sg.InputText(key="targetid")],
+#             [sg.Text('リストに追加する人数'), sg.InputText(default_text="1500", key="listingNum")],
+#             [sg.Button('スタート'), sg.Button('終了')]]
+#
+# # ウィンドウの生成
+# window = sg.Window('TwitterListingBot', layout)
+#
+# # イベントループ
+# while True:
+#     event, values = window.read()
+#     if event == sg.WIN_CLOSED or event == '終了':
+#         break
+#     elif event == 'スタート':
+#         jump_to_page(values["targetid"])
+#         login(values["twitterid"], values["password"])
+#         jump_to_page(values["targetid"])
+#         start_listing(values["listingNum"])
 
-# ウィンドウに配置するコンポーネント
-layout = [[sg.Text('Twitter Listing Bot')],
-            [sg.Text('TwitterID'), sg.InputText(key="twitterid")],
-            [sg.Text('Twitterパスワード'), sg.InputText(key="password")],
-            [sg.Text('対象のTwitterID'), sg.InputText(key="targetid")],
-            [sg.Text('リストに追加する人数'), sg.InputText(default_text="1500", key="listingNum")],
-            [sg.Button('スタート'), sg.Button('終了')]]
+# window.close()
 
-# ウィンドウの生成
-window = sg.Window('TwitterListingBot', layout)
+# tkinter初期設定
+root = tk.Tk()
+root.title("Twitter listing Bot")
+root.geometry("400x300")
 
-# イベントループ
-while True:
-    event, values = window.read()
-    if event == sg.WIN_CLOSED or event == '終了':
-        break
-    elif event == 'スタート':
-        jump_to_page(values["targetid"])
-        login(values["twitterid"], values["password"])
-        jump_to_page(values["targetid"])
-        start_listing(values["listingNum"])
 
-window.close()
+def click1():
+    jump_to_page(textbox3.get())
+    login(textbox1.get(), textbox2.get())
+    jump_to_page(textbox3.get())
+    start_listing(textbox4.get())
+
+
+# ユーザー名
+label1 = tk.Label(root, text="Twitterユーザー名")
+label1.pack()
+textbox1 = tk.Entry(master=root)
+textbox1.pack()
+
+# パスワード
+label2 = tk.Label(root, text="Twitterパスワード")
+label2.pack()
+textbox2 = tk.Entry(master=root)
+textbox2.pack()
+
+# 対象のTwitterID
+label3 = tk.Label(root, text="対象のTwitterID")
+label3.pack()
+textbox3 = tk.Entry(master=root)
+textbox3.pack()
+
+# リストする人数
+label4 = tk.Label(root, text="リスティングする人数")
+label4.pack()
+textbox4 = tk.Entry(master=root)
+textbox4.pack()
+textbox4.insert(0, "1500")
+
+button1 = tk.Button(root, text='開始', command=click1)
+button1.pack(pady=30)
+
+root.mainloop()
+
