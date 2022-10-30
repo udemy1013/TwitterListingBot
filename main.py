@@ -20,6 +20,15 @@ config = configparser.ConfigParser()
 # driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 5)
 
+# リスティングしたユーザー名を保管する変数の初期化
+listed_user = []
+
+# リストした数をカウントする変数
+listed_num = 0
+
+# エラーが出た際に移動するフォロワー
+first_follower_name = ""
+
 
 def login(username, password):
     # ログインページを開く
@@ -61,92 +70,77 @@ def jump_to_page(username):
     driver.get("https://twitter.com/" + username)
     time.sleep(3)
 
+
 def start_listing(listing_num):
-
-    # リスティングしたユーザー名を保管する変数の初期化
-    listed_user = []
-    # リストした数をカウントする変数
-    listed_number = 0
-
+    global listed_num
+    listed_number = listed_num
     # フォロワーをクリック
+    time.sleep(3)
     element_follower = driver.find_element(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[3]/div/div/div/div/div[5]/div[2]')
     element_follower.click()
     time.sleep(3)
 
+
     # フォロワーを配列に格納
     element_follower = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cellInnerDiv"]')
-    print(element_follower)
 
-    for i in range(0, int(listing_num)):
-        element_follower = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cellInnerDiv"]')
-        print("start another loop")
-        for index, item in enumerate(element_follower):
-
-            if listed_number > int(listing_num):
-                quit()
-
+    try:
+        for i in range(0, int(listing_num)):
             element_follower = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cellInnerDiv"]')
-            time.sleep(1)
+            for index, item in enumerate(element_follower):
 
-            # フォロワーズがout of rangeの場合リセット
-            try:
-                user_name = driver.find_element(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/section/div/div/div[' +str(index + 1) + ']/div/div/div/div/div[2]/div[1]/div[1]/div/div[1]/a/div/div[1]/span/span').text
-            except NoSuchElementException:
+                if listed_number > int(listing_num):
+                    quit()
 
-                scroll_by_offset(element_follower[index], 500)
-                break
-
-            if user_name not in listed_user:
-                time.sleep(1)
-                # リストしたユーザーネームを格納
-                listed_user.append(user_name)
-                print(listed_user)
-                # フォロワーをクリック
                 element_follower = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cellInnerDiv"]')
-                driver.execute_script("arguments[0].scrollIntoView();", element_follower[index])
-                driver.execute_script("window.scrollBy(0, -100)", "")
-                element_follower[index].click()
-                print(index)
-                # ちょぼマークをクリック
-                time.sleep(3)
-                # ちょぼマーク要素が存在する時にだけ以下のスクリプトを実行する
-                is_present = driver.find_elements(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div[1]/div')
-                if len(is_present) > 0:
-                    driver.find_element(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div[1]/div').click()
-                    # リストに追加をクリック
-                    time.sleep(2)
-                    is_present2 = driver.find_elements(By.XPATH,
-                                                      '//*[@id="layers"]/div[2]/div/div/div/div[2]/div/div[3]/div/div/div/a[2]/div[2]')
-                    if len(is_present2) > 0:
-                        driver.find_element(By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div[2]/div/div[3]/div/div/div/a[2]/div[2]').click()
-                        # 一番上のリストをクリック
-                        time.sleep(2)
-                        driver.find_element(By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/section/div/div/div[2]/div/div/div/div/div[1]/div[2]/div/div').click()
-                        # 保存をクリック
-                        time.sleep(2)
-                        driver.find_element(By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[3]/div/div').click()
-
-                        # リストに加えた人数を増やす
-                        listed_number += 1
-                        print("listed " + str(listed_number) + " people.")
-                # 一個戻る
-                driver.back()
                 time.sleep(1)
 
-            else:
-                print(user_name + ' is already listed')
+                # フォロワーズがout of rangeの場合リセット
+                try:
+                    user_name = driver.find_element(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/section/div/div/div[' + str(index + 1) + ']/div/div/div/div/div[2]/div[1]/div[1]/div/div[2]/div/a/div/div/span').text
 
-            # # フォロワーを配列に格納
-            # element_follower = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cellInnerDiv"]')
-            # if index >= 25:
-            #     driver.execute_script('arguments[0].scrollIntoView(true)',  element_follower[index])
-            #
-            #     element_followers = driver.find_element(By.XPATH,
-            #                                             '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/section/div/div')
-            #
-            #     # フォロワーを配列に格納
-            #     element_follower = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cellInnerDiv"]')
-            #     print(len(element_follower))
+                except NoSuchElementException:
+                    scroll_by_offset(element_follower[index], 500)
+                    break
+
+                if user_name not in listed_user:
+                    time.sleep(1)
+                    # リストしたユーザーネームを格納
+                    listed_user.append(user_name)
+                    # フォロワーをクリック
+                    element_follower = driver.find_elements(By.CSS_SELECTOR, '[data-testid="cellInnerDiv"]')
+                    driver.execute_script("arguments[0].scrollIntoView();", element_follower[index])
+                    driver.execute_script("window.scrollBy(0, -100)", "")
+                    element_follower[index].click()
+                    # ちょぼマークをクリック
+                    time.sleep(3)
+                    # ちょぼマーク要素が存在する時にだけ以下のスクリプトを実行する
+                    is_present = driver.find_elements(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div[1]/div')
+                    if len(is_present) > 0:
+                        driver.find_element(By.XPATH, '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div[1]/div').click()
+                        # リストに追加をクリック
+                        time.sleep(2)
+                        is_present2 = driver.find_elements(By.XPATH,
+                                                          '//*[@id="layers"]/div[2]/div/div/div/div[2]/div/div[3]/div/div/div/a[2]/div[2]')
+                        if len(is_present2) > 0:
+                            driver.find_element(By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div[2]/div/div[3]/div/div/div/a[2]/div[2]').click()
+                            # 一番上のリストをクリック
+                            time.sleep(2)
+                            driver.find_element(By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/section/div/div/div[2]/div/div/div/div/div[1]/div[2]/div/div').click()
+                            # 保存をクリック
+                            time.sleep(2)
+                            driver.find_element(By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[3]/div/div').click()
+
+                            # リストに加えた人数を増やす
+                            listed_number += 1
+                            print("" + str(listed_number) + "人をリスティングしました。")
+                    # 一個戻る
+                    driver.back()
+                    time.sleep(1)
+    except IndexError:
+        jump_to_new_user(listed_user[0])
+        listed_num = listed_number
+        start_listing(int(textbox4.get()) - listed_number)
 
 
 def scroll_by_offset(element, offset=0):
@@ -156,6 +150,14 @@ def scroll_by_offset(element, offset=0):
     if offset != 0:
         script = "window.scrollTo(0, document.body.scrollHeight);"
         driver.execute_script(script)
+
+
+def jump_to_new_user(userid):
+    userid_removed = userid.replace("@", "")
+    driver.get("https://twitter.com/" + userid_removed)
+
+
+
 
 
 # jump_to_page(target_id)
